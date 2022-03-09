@@ -151,3 +151,13 @@ select Comp_Name from Company
 UNION ALL
 Select Comp_Name from Persons
 ORDER BY Comp_Name
+
+-----------Sub Query-----------
+
+select * from Company
+where Comp_City IN (select Comp_Name from Persons where Name = 'Tony Stark')
+
+select * from Employee_Details 
+where Emp_ID IN (select Emp_ID from Company where Comp_Name = 'Wipro' or Emp_ID > 3)
+ 
+
