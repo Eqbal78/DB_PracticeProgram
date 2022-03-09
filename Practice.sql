@@ -130,3 +130,24 @@ insert into Persons(Person_ID,Name,Age,PhoneNumber) values
 (101,'Petter Parker',25,987654321) 
 
 */
+
+------ Having, Group By, Union and Order By Clause-------------
+
+select COUNT(Comp_ID) AS Comman_ID,Comp_City
+from Company
+GROUP BY Comp_City
+HAVING COUNT(Comp_ID) >= 1;
+
+Select * from Company ORDER BY (Comp_ID) DESC
+
+alter table Persons add Comp_Name varchar(25)
+
+update Persons set Comp_Name = 'Mumbai' where Person_ID = 101
+update Persons set Comp_Name = 'Pune' where Person_ID = 102
+update Persons set Comp_Name = 'Bangalore' where Person_ID = 103
+update Persons set Comp_Name = 'Hyderabad' where Person_ID = 104
+
+select Comp_Name from Company
+UNION ALL
+Select Comp_Name from Persons
+ORDER BY Comp_Name
