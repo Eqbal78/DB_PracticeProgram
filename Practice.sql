@@ -73,33 +73,60 @@ alter table Employee_Details rename column 'Email' to 'Email_ID'
 -- Remove the record into the table
 truncate table Employee_Details
 
--- Commit, Rollback and Savepoint the data
 
---commit data
-begin transaction
-insert into Employee_Details values
-('Natasha','Romanoff','Broadway street, NewYork Cit','45667365277','940000','blackwidow@gmail.com')
-commit
-select * from Employee_Details
+----Foreign Key And Primary Key------
 
---rollback data
-begin transaction
-update Employee_Details set FirstName = 'Caption', LastName = 'Marvel' where Emp_ID = 9
-rollback;
+create table Company
+(
+	Comp_ID int identity(1,1) PRIMARY KEY,
+    Comp_Name varchar(45) not null,
+	Comp_City varchar(25) not null,
+    Emp_ID int not null,
+    FOREIGN KEY (Emp_ID) REFERENCES Employee_Details(Emp_ID)
+)
 
---save point 1
-begin transaction
-delete Employee_Details where Emp_ID = 9
-save transaction sav1
+insert into Company(Comp_Name,Comp_City,Emp_ID) values
+	('HCL','Mumbai',2),
+	('Wipro','Bangalore',3),
+	('Infosys','Pune',5),
+	('Wipro','Pune',5),
+	('TCS','Bangalore',6),
+	('Mindtree','Hyderabad',3),
+	('TCS','Mumbai',6)
 
---save point 2
-begin transaction
-insert into Employee_Details values
-('Edwin','Jarvis','Avengers Mansion, NewYork City','66754621754','120000','jarvis@gmail.com')
-insert into Employee_Details values
-('Howard','Stark','Richford, Manhattan, NewYork','9876543256','1000000','stark@yahoo.com');
-save transaction sav2
+select * from Company
 
---rollback save point 1
-select * from Employee_Details
-rollback transaction sav1
+select * from Employee_Details 
+where Emp_ID IN (select Emp_ID from Company where Comp_Name = 'Wipro' OR Comp_City = 'Mumbai')
+
+
+---------Check and Unique Constraint---------------
+
+create table Persons (
+    Person_ID int NOT NULL,
+    Name varchar(255) NOT NULL,
+    Age int CHECK (Age>=18),
+	PhoneNumber int UNIQUE
+)
+
+insert into Persons(Person_ID,Name,Age,PhoneNumber) values
+(101,'Tony Stark',45,987654321)
+
+insert into Persons(Person_ID,Name,Age,PhoneNumber) values
+(102,'Thor',85,985421024),
+(103,'Steve Roger',65,85102412),
+(104,'Bruce Banner',42,6542102454)
+
+select * from Persons
+
+/* Error Age is less then 18
+
+insert into Persons(Person_ID,Name,Age,PhoneNumber) values
+(101,'Petter Parker',15,987654321)
+
+  Error Phone Number is Unique, not Same
+
+ insert into Persons(Person_ID,Name,Age,PhoneNumber) values
+(101,'Petter Parker',25,987654321) 
+
+*/
