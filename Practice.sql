@@ -74,7 +74,7 @@ alter table Employee_Details rename column 'Email' to 'Email_ID'
 truncate table Employee_Details
 
 
-----Foreign Key And Primary Key------
+--------------------------- Foreign Key And Primary Key -------------------------------
 
 create table Company
 (
@@ -100,7 +100,7 @@ select * from Employee_Details
 where Emp_ID IN (select Emp_ID from Company where Comp_Name = 'Wipro' OR Comp_City = 'Mumbai')
 
 
----------Check and Unique Constraint---------------
+----------------------------- Check and Unique Constraint --------------------------
 
 create table Persons (
     Person_ID int NOT NULL,
@@ -119,6 +119,24 @@ insert into Persons(Person_ID,Name,Age,PhoneNumber) values
 
 select * from Persons
 
+------------------- Table Leve Unique Constraints ---------------------
+
+create table Persons_Detail (
+    Person_ID int NOT NULL,
+    Name varchar(255) NOT NULL,
+    Age int CHECK (Age>=18),
+	PhoneNumber int not null,
+	CONSTRAINT UC_Person UNIQUE (Name,PhoneNumber)
+)
+
+insert into Persons_Detail(Person_ID,Name,Age,PhoneNumber) values
+(1021,'Ram',45,987654321),
+(1022,'Sham',85,985421024),
+(1023,'Shayam',65,85102412),
+(1024,'Ajay',42,654210245)
+
+select * from Persons_Detail
+
 /* Error Age is less then 18
 
 insert into Persons(Person_ID,Name,Age,PhoneNumber) values
@@ -131,12 +149,16 @@ insert into Persons(Person_ID,Name,Age,PhoneNumber) values
 
 */
 
------- Having, Group By, Union and Order By Clause-------------
+----------------------- Having, Group By, Union and Order By Clause -----------------------
 
 select COUNT(Comp_ID) AS Comman_ID,Comp_City
 from Company
 GROUP BY Comp_City
 HAVING COUNT(Comp_ID) >= 1;
+
+select COUNT(Comp_ID) AS Total_Company,Comp_City
+from Company where Comp_City = 'Mumbai'
+GROUP BY Comp_City
 
 Select * from Company ORDER BY (Comp_ID) DESC
 
@@ -152,12 +174,98 @@ UNION ALL
 Select Comp_Name from Persons
 ORDER BY Comp_Name
 
------------Sub Query-----------
+
+------------------------- Sub Query -----------------------------
 
 select * from Company
-where Comp_City IN (select Comp_Name from Persons where Name = 'Tony Stark')
+where Comp_City = (select Comp_Name from Persons where Name = 'Tony Stark')
 
 select * from Employee_Details 
 where Emp_ID IN (select Emp_ID from Company where Comp_Name = 'Wipro' or Emp_ID > 3)
  
 
+ ----------------------------- Joins --------------------------------
+
+create table Customers
+(
+  Customer_ID int identity(1,1) PRIMARY KEY,
+  Customer_Name varchar(26) not null,
+  Customer_Number int not null,
+  Customer_City varchar(45)
+)
+
+insert into Customers values
+('Tony',787546941,'Pune'),
+('Jack',874564896,'Mumbai'),
+('Joy',984573045,'Delhi'),
+('Roy',863271401,'Hyderabad'),
+('Salman',963021457,'Mumbai'),
+('Sohail',654781234,'Bangalore')
+
+insert into Customers values
+('Jhon',754694104,'Pune')
+
+select * from Customers
+
+create table Order_Details
+(
+Order_ID int identity(1021,1) PRIMARY KEY,
+Customer_ID int not null,
+Order_Date date
+)
+
+insert into Order_Details values
+(2,'2021-03-04'),
+(5,'2021-02-25'),
+(10,'2021-03-09'),
+(1,'2021-02-27'),
+(3,'2021-03-01'),
+(11,'2021-02-21')
+
+select * from Order_Details
+
+----------------------------- Inner Join ----------------------------
+
+Select * from Order_Details INNER JOIN Customers ON Order_Details.Customer_ID=Customers.Customer_ID
+
+----------------------------- Left Outer Join -----------------------
+
+Select Order_ID, Customer_Name, Order_Date, Customer_City
+from Order_Details LEFT JOIN Customers ON Order_Details.Customer_ID=Customers.Customer_ID
+
+Select Order_ID, Customers.Customer_Name, Order_Date, Customer_City
+from Order_Details  LEFT JOIN Customers  ON Order_Details.Customer_ID=Customers.Customer_ID where Order_ID > 1023
+ORDER BY Customers.Customer_ID
+
+----------------------------- Right Outer Join --------------------------
+
+Select Order_ID, Customer_Name, Order_Date
+from Order_Details RIGHT JOIN Customers ON Order_Details.Customer_ID=Customers.Customer_ID
+
+----------------------------- Full Outer Join ----------------------------
+
+Select Order_ID, Customer_Name, Order_Date, Customer_City
+from Order_Details FULL OUTER JOIN Customers ON Order_Details.Customer_ID=Customers.Customer_ID
+
+----------------------------- Self Join -----------------------------
+
+select A.Customer_Name AS Customer_Name1, B.Customer_Name AS Customer_Name2, A.Customer_City
+from Customers A, Customers B
+where A.Customer_ID <> B.Customer_ID
+AND A.Customer_City = B.Customer_City
+ORDER BY A.Customer_City
+
+select A.Order_ID AS ID, B.Order_Date AS Dates
+from Order_Details A, Order_Details B
+where A.Order_ID > B.Order_ID
+
+------------------------------- Cross Join -------------------------------------
+
+select Customer_Name, Order_ID
+from Customers
+CROSS JOIN Order_Details
+
+select Customer_Name, Order_ID
+from Customers
+CROSS JOIN Order_Details
+where Customers.Customer_ID=Order_Details.Customer_ID
