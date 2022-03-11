@@ -291,7 +291,7 @@ insert into Delivery(Customer_ID,Delivery_Address,Delivery_Status) values
 
 select * from Delivery
 
-select Customer_Name, Customer_City, Delivery_Status, Delivery_Address
+select  Customer_Name, Customer_City, Delivery_Status, Delivery_Address
 from Customers as c
 INNER JOIN
 Order_Details as o
@@ -310,7 +310,7 @@ Delivery as d
 on o.Customer_ID = d.Customer_ID 
 where c.Customer_City = 'Mumbai'
 
-select c.Customer_ID , c.Customer_Name, Delivery_Status, Delivery_Address
+select c.Customer_ID , c.Customer_Name, Delivery_Status, Delivery_Address,Order_Date
 from Customers as c
 INNER JOIN
 Order_Details as o
@@ -328,3 +328,4 @@ on c.Customer_ID = o.Customer_ID
 RIGHT JOIN
 Delivery as d
 on o.Customer_ID = d.Customer_ID
+
